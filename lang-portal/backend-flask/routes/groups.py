@@ -157,7 +157,65 @@ def load(app):
     except Exception as e:
       return jsonify({"error": str(e)}), 500
 
-  # todo GET /groups/:id/words/raw
+  @app.route('/groups/<int:id>/words/raw', methods=['GET'])
+  @cross_origin()
+  def get_group_words_raw(id):
+    try:
+      cursor = app.db.cursor()
+      
+      # First, check if the group exists
+      cursor.execute('SELECT name FROM groups WHERE id = ?', (id,))
+      group = cursor.fetchone()
+      if not group:
+        return jsonify({"error": "Group not found"}), 404
+
+      # Query to fetch all words in the group without pagination
+      cursor.execute('''
+        SELECT w.id, w.german, w.pronunciation, w.english, w.gender, w.plural, w.parts,
+               COALESCE(wr.correct_count, 0) as correct_count,
+               COALESCE(wr.wrong_count, 0) as wrong_count
+        FROM words w
+        JOIN word_groups wg ON w.id = wg.word_id
+        LEFT JOIN word_reviews wr ON w.id = wr.word_id
+        WHERE wg.group_id = ?
+        ORDER BY w.german ASC
+      ''', (id,))
+      
+      words = cursor.fetchall()
+
+      # Format the response as a simple array of word objects
+      words_data = []
+      for word in words:
+        # Parse parts JSON if it exists
+        parts = None
+        if word["parts"]:
+          try:
+            import json
+            parts = json.loads(word["parts"])
+          except:
+            parts = None
+            
+        words_data.append({
+          "id": word["id"],
+          "german": word["german"],
+          "pronunciation": word["pronunciation"],
+          "english": word["english"],
+          "gender": word["gender"],
+          "plural": word["plural"],
+          "parts": parts,
+          "correct_count": word["correct_count"],
+          "wrong_count": word["wrong_count"]
+        })
+
+      return jsonify({
+        "group_id": id,
+        "group_name": group["name"],
+        "words": words_data,
+        "total_words": len(words_data)
+      })
+      
+    except Exception as e:
+      return jsonify({"error": str(e)}), 500
 
   @app.route('/groups/<int:id>/study_sessions', methods=['GET'])
   @cross_origin()

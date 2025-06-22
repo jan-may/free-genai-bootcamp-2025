@@ -20,9 +20,12 @@
 ## 🔧 Missing Backend Routes
 
 ### 3. Raw Group Words Endpoint
-- [ ] Create `GET /groups/{id}/words/raw` endpoint
-- [ ] Return unformatted word data without pagination
-- [ ] Useful for study activities that need all words at once
+- [x] **COMPLETED** - `GET /groups/{id}/words/raw` endpoint implemented
+- [x] Returns all words in a group without pagination
+- [x] Includes complete word data (german, pronunciation, english, gender, plural, parts)
+- [x] Includes study statistics (correct/wrong counts)
+- [x] Useful for study activities that need all words at once
+- [x] Includes proper error handling and group validation
 
 ## 🧹 Code Cleanup Tasks
 
@@ -125,7 +128,8 @@
 - ✅ **COMPLETED** - Items 1-2: Study session endpoints
 
 🔧 **High (Important for stability):**
-- Items 3-6: API consistency and cleanup
+- ✅ **COMPLETED** - Item 3: Raw group words endpoint
+- Items 4-6: API consistency and cleanup
 
 🛡️ **Medium (Quality improvements):**
 - Items 7-11: Security, validation, features
@@ -135,14 +139,14 @@
 
 ---
 
-## Completed Critical Features ✅
+## Completed Features ✅
 
 1. ✅ **Study session creation endpoint** - `POST /study_sessions`
 2. ✅ **Study session review submission endpoint** - `POST /study_sessions/{id}/review`
+3. ✅ **Raw group words endpoint** - `GET /groups/{id}/words/raw`
 
 ## Next Implementation Order
 
-3. **Standardize API URL patterns**
 4. **Clean up debug logging and duplicate interfaces**
-5. **Add input validation and error handling**
-6. **Implement raw group words endpoint**
+5. **Standardize API URL patterns**
+6. **Add input validation and error handling**
