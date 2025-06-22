@@ -4,7 +4,47 @@ from datetime import datetime
 import math
 
 def load(app):
-  # todo /study_sessions POST
+  @app.route('/study_sessions', methods=['POST'])
+  @cross_origin()
+  def create_study_session():
+    try:
+      cursor = app.db.cursor()
+      
+      # Get request data
+      data = request.get_json()
+      if not data:
+        return jsonify({"error": "No JSON data provided"}), 400
+      
+      group_id = data.get('group_id')
+      study_activity_id = data.get('study_activity_id')
+      
+      # Validate required fields
+      if not group_id or not study_activity_id:
+        return jsonify({"error": "group_id and study_activity_id are required"}), 400
+      
+      # Verify group exists
+      cursor.execute('SELECT id FROM groups WHERE id = ?', (group_id,))
+      if not cursor.fetchone():
+        return jsonify({"error": "Group not found"}), 404
+      
+      # Verify study activity exists
+      cursor.execute('SELECT id FROM study_activities WHERE id = ?', (study_activity_id,))
+      if not cursor.fetchone():
+        return jsonify({"error": "Study activity not found"}), 404
+      
+      # Create study session
+      cursor.execute('''
+        INSERT INTO study_sessions (group_id, study_activity_id, created_at)
+        VALUES (?, ?, datetime('now'))
+      ''', (group_id, study_activity_id))
+      
+      session_id = cursor.lastrowid
+      app.db.commit()
+      
+      return jsonify({"session_id": session_id}), 201
+      
+    except Exception as e:
+      return jsonify({"error": str(e)}), 500
 
   @app.route('/api/study-sessions', methods=['GET'])
   @cross_origin()
@@ -153,7 +193,71 @@ def load(app):
     except Exception as e:
       return jsonify({"error": str(e)}), 500
 
-  # todo POST /study_sessions/:id/review
+  @app.route('/study_sessions/<int:session_id>/review', methods=['POST'])
+  @cross_origin()
+  def submit_study_session_review(session_id):
+    try:
+      cursor = app.db.cursor()
+      
+      # Get request data
+      data = request.get_json()
+      if not data:
+        return jsonify({"error": "No JSON data provided"}), 400
+      
+      reviews = data.get('reviews', [])
+      if not reviews:
+        return jsonify({"error": "No reviews provided"}), 400
+      
+      # Verify study session exists
+      cursor.execute('SELECT id FROM study_sessions WHERE id = ?', (session_id,))
+      if not cursor.fetchone():
+        return jsonify({"error": "Study session not found"}), 404
+      
+      # Process each review
+      for review in reviews:
+        word_id = review.get('word_id')
+        is_correct = review.get('is_correct')
+        
+        if word_id is None or is_correct is None:
+          return jsonify({"error": "Each review must have word_id and is_correct"}), 400
+        
+        # Verify word exists
+        cursor.execute('SELECT id FROM words WHERE id = ?', (word_id,))
+        if not cursor.fetchone():
+          return jsonify({"error": f"Word with id {word_id} not found"}), 404
+        
+        # Insert word review item
+        cursor.execute('''
+          INSERT INTO word_review_items (word_id, study_session_id, correct, created_at)
+          VALUES (?, ?, ?, datetime('now'))
+        ''', (word_id, session_id, 1 if is_correct else 0))
+        
+        # Update or create word review aggregate
+        cursor.execute('''
+          INSERT INTO word_reviews (word_id, correct_count, wrong_count, last_reviewed)
+          VALUES (?, ?, ?, datetime('now'))
+          ON CONFLICT(word_id) DO UPDATE SET
+            correct_count = correct_count + ?,
+            wrong_count = wrong_count + ?,
+            last_reviewed = datetime('now')
+        ''', (
+          word_id,
+          1 if is_correct else 0,
+          0 if is_correct else 1,
+          1 if is_correct else 0,
+          0 if is_correct else 1
+        ))
+      
+      app.db.commit()
+      
+      return jsonify({
+        "message": f"Successfully recorded {len(reviews)} word reviews",
+        "session_id": session_id,
+        "reviews_count": len(reviews)
+      }), 200
+      
+    except Exception as e:
+      return jsonify({"error": str(e)}), 500
 
   @app.route('/api/study-sessions/reset', methods=['POST'])
   @cross_origin()
