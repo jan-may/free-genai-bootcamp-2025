@@ -2,6 +2,10 @@ from flask import request, jsonify, g
 from flask_cors import cross_origin
 import json
 from lib.validation import validate_pagination_params, validate_sort_params, validate_positive_integer
+from lib.error_handler import (
+    create_error_response, handle_database_error, handle_validation_error,
+    handle_not_found_error, handle_generic_error
+)
 
 def load(app):
   @app.route('/api/groups', methods=['GET'])
@@ -52,7 +56,7 @@ def load(app):
         'current_page': page
       })
     except Exception as e:
-      return jsonify({"error": str(e)}), 500
+      return handle_generic_error(e, "fetching groups")
 
   @app.route('/api/groups/<int:id>', methods=['GET'])
   @cross_origin()
@@ -61,7 +65,7 @@ def load(app):
       # Validate group ID parameter
       validated_id, id_error = validate_positive_integer(id, 'group_id')
       if id_error:
-        return jsonify({"error": id_error}), 400
+        return handle_validation_error(id_error)
       
       cursor = app.db.cursor()
 
@@ -74,7 +78,7 @@ def load(app):
       
       group = cursor.fetchone()
       if not group:
-        return jsonify({"error": "Group not found"}), 404
+        return handle_not_found_error("Group", validated_id)
 
       return jsonify({
         "id": group["id"],
@@ -82,7 +86,7 @@ def load(app):
         "word_count": group["words_count"]
       })
     except Exception as e:
-      return jsonify({"error": str(e)}), 500
+      return handle_generic_error(e, "fetching group details")
 
   @app.route('/api/groups/<int:id>/words', methods=['GET'])
   @cross_origin()
@@ -110,7 +114,7 @@ def load(app):
       cursor.execute('SELECT name FROM groups WHERE id = ?', (id,))
       group = cursor.fetchone()
       if not group:
-        return jsonify({"error": "Group not found"}), 404
+        return handle_not_found_error("Group", id)
 
       # Query to fetch words with pagination and sorting
       cursor.execute(f'''
@@ -156,7 +160,7 @@ def load(app):
         'current_page': page
       })
     except Exception as e:
-      return jsonify({"error": str(e)}), 500
+      return handle_generic_error(e, "fetching group words")
 
   @app.route('/api/groups/<int:id>/words/raw', methods=['GET'])
   @cross_origin()
@@ -168,7 +172,7 @@ def load(app):
       cursor.execute('SELECT name FROM groups WHERE id = ?', (id,))
       group = cursor.fetchone()
       if not group:
-        return jsonify({"error": "Group not found"}), 404
+        return handle_not_found_error("Group", id)
 
       # Query to fetch all words in the group without pagination
       cursor.execute('''
@@ -216,7 +220,7 @@ def load(app):
       })
       
     except Exception as e:
-      return jsonify({"error": str(e)}), 500
+      return handle_generic_error(e, "fetching group words raw data")
 
   @app.route('/api/groups/<int:id>/study_sessions', methods=['GET'])
   @cross_origin()
@@ -307,4 +311,4 @@ def load(app):
         'current_page': page
       })
     except Exception as e:
-      return jsonify({"error": str(e)}), 500
+      return handle_generic_error(e, "fetching group study sessions")

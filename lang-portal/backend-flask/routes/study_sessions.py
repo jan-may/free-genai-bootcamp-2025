@@ -6,6 +6,10 @@ from lib.validation import (
     validate_pagination_params, validate_sort_params, validate_positive_integer,
     validate_required_fields, validate_word_review
 )
+from lib.error_handler import (
+    create_error_response, handle_database_error, handle_validation_error,
+    handle_not_found_error, handle_generic_error
+)
 
 def load(app):
   @app.route('/api/study_sessions', methods=['POST'])
@@ -20,27 +24,27 @@ def load(app):
       # Validate required fields
       field_errors = validate_required_fields(data, ['group_id', 'study_activity_id'])
       if field_errors:
-        return jsonify({"error": field_errors[0]}), 400
+        return handle_validation_error(field_errors)
       
       # Validate group_id
       group_id, group_error = validate_positive_integer(data.get('group_id'), 'group_id')
       if group_error:
-        return jsonify({"error": group_error}), 400
+        return handle_validation_error(group_error)
       
       # Validate study_activity_id
       study_activity_id, activity_error = validate_positive_integer(data.get('study_activity_id'), 'study_activity_id')
       if activity_error:
-        return jsonify({"error": activity_error}), 400
+        return handle_validation_error(activity_error)
       
       # Verify group exists
       cursor.execute('SELECT id FROM groups WHERE id = ?', (group_id,))
       if not cursor.fetchone():
-        return jsonify({"error": "Group not found"}), 404
+        return handle_not_found_error("Group", group_id)
       
       # Verify study activity exists
       cursor.execute('SELECT id FROM study_activities WHERE id = ?', (study_activity_id,))
       if not cursor.fetchone():
-        return jsonify({"error": "Study activity not found"}), 404
+        return handle_not_found_error("Study activity", study_activity_id)
       
       # Create study session
       cursor.execute('''
@@ -54,7 +58,7 @@ def load(app):
       return jsonify({"session_id": session_id}), 201
       
     except Exception as e:
-      return jsonify({"error": str(e)}), 500
+      return handle_database_error(e, "creating study session")
 
   @app.route('/api/study-sessions', methods=['GET'])
   @cross_origin()
@@ -210,7 +214,7 @@ def load(app):
       # Validate session_id parameter
       validated_session_id, session_error = validate_positive_integer(session_id, 'session_id')
       if session_error:
-        return jsonify({"error": session_error}), 400
+        return handle_validation_error(session_error)
       
       cursor = app.db.cursor()
       
@@ -220,22 +224,22 @@ def load(app):
       # Validate required fields
       field_errors = validate_required_fields(data, ['reviews'])
       if field_errors:
-        return jsonify({"error": field_errors[0]}), 400
+        return handle_validation_error(field_errors)
       
       reviews = data.get('reviews', [])
       if not isinstance(reviews, list) or len(reviews) == 0:
-        return jsonify({"error": "Reviews must be a non-empty array"}), 400
+        return handle_validation_error("Reviews must be a non-empty array")
       
       # Verify study session exists
       cursor.execute('SELECT id FROM study_sessions WHERE id = ?', (validated_session_id,))
       if not cursor.fetchone():
-        return jsonify({"error": "Study session not found"}), 404
+        return handle_not_found_error("Study session", validated_session_id)
       
       # Validate each review
       for i, review in enumerate(reviews):
         is_valid, error_msg = validate_word_review(review)
         if not is_valid:
-          return jsonify({"error": f"Review {i+1}: {error_msg}"}), 400
+          return handle_validation_error(f"Review {i+1}: {error_msg}")
       
       # Process each review
       for review in reviews:
@@ -245,7 +249,7 @@ def load(app):
         # Verify word exists
         cursor.execute('SELECT id FROM words WHERE id = ?', (word_id,))
         if not cursor.fetchone():
-          return jsonify({"error": f"Word with id {word_id} not found"}), 404
+          return handle_not_found_error("Word", word_id)
         
         # Insert word review item
         cursor.execute('''
@@ -278,7 +282,7 @@ def load(app):
       }), 200
       
     except Exception as e:
-      return jsonify({"error": str(e)}), 500
+      return handle_database_error(e, "submitting study session review")
 
   @app.route('/api/study-sessions/reset', methods=['POST'])
   @cross_origin()

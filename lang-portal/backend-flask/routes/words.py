@@ -2,6 +2,10 @@ from flask import request, jsonify, g
 from flask_cors import cross_origin
 import json
 from lib.validation import validate_pagination_params, validate_sort_params, validate_positive_integer
+from lib.error_handler import (
+    create_error_response, handle_database_error, handle_validation_error,
+    handle_not_found_error, handle_generic_error, safe_execute
+)
 
 def load(app):
   # Endpoint: GET /words with pagination (50 words per page)
@@ -69,7 +73,7 @@ def load(app):
       })
 
     except Exception as e:
-      return jsonify({"error": str(e)}), 500
+      return handle_database_error(e, "fetching words")
     finally:
       app.db.close()
 
@@ -81,7 +85,7 @@ def load(app):
       # Validate word_id parameter
       validated_word_id, id_error = validate_positive_integer(word_id, 'word_id')
       if id_error:
-        return jsonify({"error": id_error}), 400
+        return handle_validation_error(id_error)
       
       cursor = app.db.cursor()
       
@@ -102,7 +106,7 @@ def load(app):
       word = cursor.fetchone()
       
       if not word:
-        return jsonify({"error": "Word not found"}), 404
+        return handle_not_found_error("Word", validated_word_id)
       
       # Parse the groups string into a list of group objects
       groups = []
@@ -129,4 +133,4 @@ def load(app):
       })
       
     except Exception as e:
-      return jsonify({"error": str(e)}), 500
+      return handle_database_error(e, "fetching word details")
