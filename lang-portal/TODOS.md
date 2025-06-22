@@ -40,13 +40,14 @@
 ## 🔄 API Consistency Issues
 
 ### 6. Standardize API URL Patterns
-- [ ] Choose consistent URL pattern for all endpoints
-- [ ] **Current inconsistency:**
-  - Some use `/api/` prefix: `/api/study-sessions`, `/api/study-activities`
-  - Others don't: `/groups`, `/words`, `/dashboard/stats`
-- [ ] **Options:**
-  - Option A: Add `/api/` prefix to all endpoints
-  - Option B: Remove `/api/` prefix from study-related endpoints
+- [x] **COMPLETED** - All endpoints now use `/api/` prefix consistently
+- [x] Updated all backend routes to include `/api/` prefix:
+  - [x] `/api/groups` (and all group-related endpoints)
+  - [x] `/api/words` (and all word-related endpoints)
+  - [x] `/api/dashboard` (stats and recent-session)
+  - [x] `/api/study_sessions` (all study session endpoints)
+- [x] Updated all frontend API calls to use `/api/` prefix
+- [x] **Result:** All 19 endpoints now follow consistent `/api/` pattern
 
 ## 🛡️ Security and Validation
 
@@ -129,7 +130,8 @@
 
 🔧 **High (Important for stability):**
 - ✅ **COMPLETED** - Item 3: Raw group words endpoint
-- Items 4-6: API consistency and cleanup
+- ✅ **COMPLETED** - Item 6: API URL standardization  
+- Items 4-5: Code cleanup
 
 🛡️ **Medium (Quality improvements):**
 - Items 7-11: Security, validation, features
@@ -141,12 +143,12 @@
 
 ## Completed Features ✅
 
-1. ✅ **Study session creation endpoint** - `POST /study_sessions`
-2. ✅ **Study session review submission endpoint** - `POST /study_sessions/{id}/review`
-3. ✅ **Raw group words endpoint** - `GET /groups/{id}/words/raw`
+1. ✅ **Study session creation endpoint** - `POST /api/study_sessions`
+2. ✅ **Study session review submission endpoint** - `POST /api/study_sessions/{id}/review`
+3. ✅ **Raw group words endpoint** - `GET /api/groups/{id}/words/raw`
+4. ✅ **API URL standardization** - All 19 endpoints now use `/api/` prefix
 
 ## Next Implementation Order
 
-4. **Clean up debug logging and duplicate interfaces**
-5. **Standardize API URL patterns**
+5. **Clean up debug logging and duplicate interfaces**
 6. **Add input validation and error handling**

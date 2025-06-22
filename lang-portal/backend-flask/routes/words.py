@@ -4,7 +4,7 @@ import json
 
 def load(app):
   # Endpoint: GET /words with pagination (50 words per page)
-  @app.route('/words', methods=['GET'])
+  @app.route('/api/words', methods=['GET'])
   @cross_origin()
   def get_words():
     try:
@@ -73,7 +73,7 @@ def load(app):
       app.db.close()
 
   # Endpoint: GET /words/:id to get a single word with its details
-  @app.route('/words/<int:word_id>', methods=['GET'])
+  @app.route('/api/words/<int:word_id>', methods=['GET'])
   @cross_origin()
   def get_word(word_id):
     try:

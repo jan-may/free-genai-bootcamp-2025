@@ -4,7 +4,7 @@ from datetime import datetime
 import math
 
 def load(app):
-  @app.route('/study_sessions', methods=['POST'])
+  @app.route('/api/study_sessions', methods=['POST'])
   @cross_origin()
   def create_study_session():
     try:
@@ -193,7 +193,7 @@ def load(app):
     except Exception as e:
       return jsonify({"error": str(e)}), 500
 
-  @app.route('/study_sessions/<int:session_id>/review', methods=['POST'])
+  @app.route('/api/study_sessions/<int:session_id>/review', methods=['POST'])
   @cross_origin()
   def submit_study_session_review(session_id):
     try:
