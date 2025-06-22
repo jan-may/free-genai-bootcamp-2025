@@ -2,6 +2,10 @@ from flask import request, jsonify, g
 from flask_cors import cross_origin
 from datetime import datetime
 import math
+from lib.validation import (
+    validate_pagination_params, validate_sort_params, validate_positive_integer,
+    validate_required_fields, validate_word_review
+)
 
 def load(app):
   @app.route('/api/study_sessions', methods=['POST'])
@@ -10,17 +14,23 @@ def load(app):
     try:
       cursor = app.db.cursor()
       
-      # Get request data
+      # Get and validate request data
       data = request.get_json()
-      if not data:
-        return jsonify({"error": "No JSON data provided"}), 400
-      
-      group_id = data.get('group_id')
-      study_activity_id = data.get('study_activity_id')
       
       # Validate required fields
-      if not group_id or not study_activity_id:
-        return jsonify({"error": "group_id and study_activity_id are required"}), 400
+      field_errors = validate_required_fields(data, ['group_id', 'study_activity_id'])
+      if field_errors:
+        return jsonify({"error": field_errors[0]}), 400
+      
+      # Validate group_id
+      group_id, group_error = validate_positive_integer(data.get('group_id'), 'group_id')
+      if group_error:
+        return jsonify({"error": group_error}), 400
+      
+      # Validate study_activity_id
+      study_activity_id, activity_error = validate_positive_integer(data.get('study_activity_id'), 'study_activity_id')
+      if activity_error:
+        return jsonify({"error": activity_error}), 400
       
       # Verify group exists
       cursor.execute('SELECT id FROM groups WHERE id = ?', (group_id,))
@@ -197,29 +207,40 @@ def load(app):
   @cross_origin()
   def submit_study_session_review(session_id):
     try:
+      # Validate session_id parameter
+      validated_session_id, session_error = validate_positive_integer(session_id, 'session_id')
+      if session_error:
+        return jsonify({"error": session_error}), 400
+      
       cursor = app.db.cursor()
       
-      # Get request data
+      # Get and validate request data
       data = request.get_json()
-      if not data:
-        return jsonify({"error": "No JSON data provided"}), 400
+      
+      # Validate required fields
+      field_errors = validate_required_fields(data, ['reviews'])
+      if field_errors:
+        return jsonify({"error": field_errors[0]}), 400
       
       reviews = data.get('reviews', [])
-      if not reviews:
-        return jsonify({"error": "No reviews provided"}), 400
+      if not isinstance(reviews, list) or len(reviews) == 0:
+        return jsonify({"error": "Reviews must be a non-empty array"}), 400
       
       # Verify study session exists
-      cursor.execute('SELECT id FROM study_sessions WHERE id = ?', (session_id,))
+      cursor.execute('SELECT id FROM study_sessions WHERE id = ?', (validated_session_id,))
       if not cursor.fetchone():
         return jsonify({"error": "Study session not found"}), 404
       
+      # Validate each review
+      for i, review in enumerate(reviews):
+        is_valid, error_msg = validate_word_review(review)
+        if not is_valid:
+          return jsonify({"error": f"Review {i+1}: {error_msg}"}), 400
+      
       # Process each review
       for review in reviews:
-        word_id = review.get('word_id')
-        is_correct = review.get('is_correct')
-        
-        if word_id is None or is_correct is None:
-          return jsonify({"error": "Each review must have word_id and is_correct"}), 400
+        word_id = review['word_id']  # Already validated
+        is_correct = review['is_correct']  # Already validated
         
         # Verify word exists
         cursor.execute('SELECT id FROM words WHERE id = ?', (word_id,))
@@ -230,7 +251,7 @@ def load(app):
         cursor.execute('''
           INSERT INTO word_review_items (word_id, study_session_id, correct, created_at)
           VALUES (?, ?, ?, datetime('now'))
-        ''', (word_id, session_id, 1 if is_correct else 0))
+        ''', (word_id, validated_session_id, 1 if is_correct else 0))
         
         # Update or create word review aggregate
         cursor.execute('''
@@ -252,7 +273,7 @@ def load(app):
       
       return jsonify({
         "message": f"Successfully recorded {len(reviews)} word reviews",
-        "session_id": session_id,
+        "session_id": validated_session_id,
         "reviews_count": len(reviews)
       }), 200
       

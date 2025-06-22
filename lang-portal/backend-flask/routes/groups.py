@@ -1,6 +1,7 @@
 from flask import request, jsonify, g
 from flask_cors import cross_origin
 import json
+from lib.validation import validate_pagination_params, validate_sort_params, validate_positive_integer
 
 def load(app):
   @app.route('/api/groups', methods=['GET'])
@@ -9,21 +10,16 @@ def load(app):
     try:
       cursor = app.db.cursor()
 
-      # Get the current page number from query parameters (default is 1)
-      page = int(request.args.get('page', 1))
+      # Validate pagination parameters
+      page, _, page_error = validate_pagination_params(request.args.get('page'))
       groups_per_page = 10
       offset = (page - 1) * groups_per_page
 
-      # Get sorting parameters from the query string
-      sort_by = request.args.get('sort_by', 'name')  # Default to sorting by 'name'
-      order = request.args.get('order', 'asc')  # Default to ascending order
-
-      # Validate sort_by and order
+      # Validate sorting parameters
+      sort_by = request.args.get('sort_by', 'name')
+      order = request.args.get('order', 'asc')
       valid_columns = ['name', 'words_count']
-      if sort_by not in valid_columns:
-        sort_by = 'name'
-      if order not in ['asc', 'desc']:
-        order = 'asc'
+      sort_by, order, sort_error = validate_sort_params(sort_by, order, valid_columns)
 
       # Query to fetch groups with sorting and the cached word count
       cursor.execute(f'''
@@ -62,6 +58,11 @@ def load(app):
   @cross_origin()
   def get_group(id):
     try:
+      # Validate group ID parameter
+      validated_id, id_error = validate_positive_integer(id, 'group_id')
+      if id_error:
+        return jsonify({"error": id_error}), 400
+      
       cursor = app.db.cursor()
 
       # Get group details
@@ -69,7 +70,7 @@ def load(app):
         SELECT id, name, words_count
         FROM groups
         WHERE id = ?
-      ''', (id,))
+      ''', (validated_id,))
       
       group = cursor.fetchone()
       if not group:
