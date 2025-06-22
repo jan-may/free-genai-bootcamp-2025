@@ -1,5 +1,4 @@
 [
-  {"name": "German Typing Tutor", "url": "http://localhost:8080", "preview_url": "/assets/study_activities/typing-tutor.png"},
-  {"name": "Gender Practice", "url": "http://localhost:8081", "preview_url": "/assets/study_activities/gender-practice.png"},
-  {"name": "Verb Conjugation", "url": "http://localhost:8082", "preview_url": "/assets/study_activities/verb-conjugation.png"}
+  {"name": "German Word Practice", "url": "about:blank", "preview_url": "/assets/study_activities/word-practice.png"},
+  {"name": "Vocabulary Review", "url": "https://www.google.com/search?q=german+vocabulary", "preview_url": "/assets/study_activities/vocab-review.png"}
 ]
