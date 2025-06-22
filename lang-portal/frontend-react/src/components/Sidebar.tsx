@@ -37,7 +37,7 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        LangPortal
+        German Learning Portal
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

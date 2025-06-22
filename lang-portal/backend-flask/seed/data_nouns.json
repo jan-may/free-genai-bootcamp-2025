@@ -1,0 +1,208 @@
+[
+  {
+    "german": "Haus",
+    "pronunciation": "/haʊs/",
+    "english": "house",
+    "gender": "das",
+    "plural": "Häuser",
+    "parts": [
+      { "german": "Haus", "pronunciation": ["Haus"] }
+    ]
+  },
+  {
+    "german": "Mann",
+    "pronunciation": "/man/",
+    "english": "man",
+    "gender": "der",
+    "plural": "Männer",
+    "parts": [
+      { "german": "Mann", "pronunciation": ["Mann"] }
+    ]
+  },
+  {
+    "german": "Frau",
+    "pronunciation": "/fʁaʊ/",
+    "english": "woman",
+    "gender": "die",
+    "plural": "Frauen",
+    "parts": [
+      { "german": "Frau", "pronunciation": ["Frau"] }
+    ]
+  },
+  {
+    "german": "Kind",
+    "pronunciation": "/kɪnt/",
+    "english": "child",
+    "gender": "das",
+    "plural": "Kinder",
+    "parts": [
+      { "german": "Kind", "pronunciation": ["Kind"] }
+    ]
+  },
+  {
+    "german": "Buch",
+    "pronunciation": "/buːx/",
+    "english": "book",
+    "gender": "das",
+    "plural": "Bücher",
+    "parts": [
+      { "german": "Buch", "pronunciation": ["Buch"] }
+    ]
+  },
+  {
+    "german": "Schule",
+    "pronunciation": "/ˈʃuːlə/",
+    "english": "school",
+    "gender": "die",
+    "plural": "Schulen",
+    "parts": [
+      { "german": "Schul", "pronunciation": ["Schul"] },
+      { "german": "e", "pronunciation": ["e"] }
+    ]
+  },
+  {
+    "german": "Auto",
+    "pronunciation": "/ˈaʊto/",
+    "english": "car",
+    "gender": "das",
+    "plural": "Autos",
+    "parts": [
+      { "german": "Au", "pronunciation": ["Au"] },
+      { "german": "to", "pronunciation": ["to"] }
+    ]
+  },
+  {
+    "german": "Zeit",
+    "pronunciation": "/tsaɪt/",
+    "english": "time",
+    "gender": "die",
+    "plural": "Zeiten",
+    "parts": [
+      { "german": "Zeit", "pronunciation": ["Zeit"] }
+    ]
+  },
+  {
+    "german": "Tag",
+    "pronunciation": "/taːk/",
+    "english": "day",
+    "gender": "der",
+    "plural": "Tage",
+    "parts": [
+      { "german": "Tag", "pronunciation": ["Tag"] }
+    ]
+  },
+  {
+    "german": "Woche",
+    "pronunciation": "/ˈvɔxə/",
+    "english": "week",
+    "gender": "die",
+    "plural": "Wochen",
+    "parts": [
+      { "german": "Woch", "pronunciation": ["Woch"] },
+      { "german": "e", "pronunciation": ["e"] }
+    ]
+  },
+  {
+    "german": "Jahr",
+    "pronunciation": "/jaːɐ/",
+    "english": "year",
+    "gender": "das",
+    "plural": "Jahre",
+    "parts": [
+      { "german": "Jahr", "pronunciation": ["Jahr"] }
+    ]
+  },
+  {
+    "german": "Wasser",
+    "pronunciation": "/ˈvasɐ/",
+    "english": "water",
+    "gender": "das",
+    "plural": "Wasser",
+    "parts": [
+      { "german": "Wass", "pronunciation": ["Wass"] },
+      { "german": "er", "pronunciation": ["er"] }
+    ]
+  },
+  {
+    "german": "Brot",
+    "pronunciation": "/bʁoːt/",
+    "english": "bread",
+    "gender": "das",
+    "plural": "Brote",
+    "parts": [
+      { "german": "Brot", "pronunciation": ["Brot"] }
+    ]
+  },
+  {
+    "german": "Stadt",
+    "pronunciation": "/ʃtat/",
+    "english": "city",
+    "gender": "die",
+    "plural": "Städte",
+    "parts": [
+      { "german": "Stadt", "pronunciation": ["Stadt"] }
+    ]
+  },
+  {
+    "german": "Land",
+    "pronunciation": "/lant/",
+    "english": "country",
+    "gender": "das",
+    "plural": "Länder",
+    "parts": [
+      { "german": "Land", "pronunciation": ["Land"] }
+    ]
+  },
+  {
+    "german": "Freund",
+    "pronunciation": "/fʁɔʏnt/",
+    "english": "friend (male)",
+    "gender": "der",
+    "plural": "Freunde",
+    "parts": [
+      { "german": "Freund", "pronunciation": ["Freund"] }
+    ]
+  },
+  {
+    "german": "Freundin",
+    "pronunciation": "/fʁɔʏndɪn/",
+    "english": "friend (female)",
+    "gender": "die",
+    "plural": "Freundinnen",
+    "parts": [
+      { "german": "Freund", "pronunciation": ["Freund"] },
+      { "german": "in", "pronunciation": ["in"] }
+    ]
+  },
+  {
+    "german": "Arbeit",
+    "pronunciation": "/ˈaʁbaɪt/",
+    "english": "work",
+    "gender": "die",
+    "plural": "Arbeiten",
+    "parts": [
+      { "german": "Arbeit", "pronunciation": ["Arbeit"] }
+    ]
+  },
+  {
+    "german": "Geld",
+    "pronunciation": "/ɡɛlt/",
+    "english": "money",
+    "gender": "das",
+    "plural": "Gelder",
+    "parts": [
+      { "german": "Geld", "pronunciation": ["Geld"] }
+    ]
+  },
+  {
+    "german": "Familie",
+    "pronunciation": "/faˈmiːli̯ə/",
+    "english": "family",
+    "gender": "die",
+    "plural": "Familien",
+    "parts": [
+      { "german": "Famil", "pronunciation": ["Famil"] },
+      { "german": "ie", "pronunciation": ["ie"] }
+    ]
+  }
+]

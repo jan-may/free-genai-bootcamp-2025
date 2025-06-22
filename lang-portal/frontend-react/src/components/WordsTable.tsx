@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { ChevronUp, ChevronDown } from 'lucide-react'
 import { Word } from '../services/api'
 
-export type WordSortKey = 'kanji' | 'romaji' | 'english' | 'correct_count' | 'wrong_count'
+export type WordSortKey = 'german' | 'pronunciation' | 'english' | 'correct_count' | 'wrong_count' | 'gender' | 'plural'
 
 interface WordsTableProps {
   words: Word[]
@@ -18,7 +18,7 @@ export default function WordsTable({ words, sortKey, sortDirection, onSort }: Wo
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead className="bg-gray-50 dark:bg-gray-900">
           <tr>
-            {(['kanji', 'romaji', 'english', 'correct_count', 'wrong_count'] as const).map((key) => (
+            {(['german', 'pronunciation', 'english', 'gender', 'plural', 'correct_count', 'wrong_count'] as const).map((key) => (
               <th
                 key={key}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -28,6 +28,8 @@ export default function WordsTable({ words, sortKey, sortDirection, onSort }: Wo
                   <span>
                     {key === 'correct_count' ? 'Correct' :
                      key === 'wrong_count' ? 'Wrong' :
+                     key === 'german' ? 'German' :
+                     key === 'pronunciation' ? 'Pronunciation' :
                      key.charAt(0).toUpperCase() + key.slice(1)}
                   </span>
                   {sortKey === key && (
@@ -46,14 +48,20 @@ export default function WordsTable({ words, sortKey, sortDirection, onSort }: Wo
                   to={`/words/${word.id}`}
                   className="text-blue-600 dark:text-blue-400 hover:underline"
                 >
-                  {word.kanji}
+                  {word.german}
                 </Link>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                {word.romaji}
+                {word.pronunciation}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                 {word.english}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                {word.gender || '-'}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                {word.plural || '-'}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-green-500 dark:text-green-400">
                 {word.correct_count}

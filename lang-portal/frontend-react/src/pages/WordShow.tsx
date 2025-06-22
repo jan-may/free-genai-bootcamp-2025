@@ -60,19 +60,39 @@ export default function WordShow() {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
         <div className="p-6 space-y-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Japanese</h2>
-            <p className="mt-1 text-3xl text-gray-600 dark:text-gray-300">{word.kanji}</p>
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-white">German</h2>
+            <p className="mt-1 text-3xl text-gray-600 dark:text-gray-300">{word.german}</p>
           </div>
 
           <div>
-            <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Romaji</h2>
-            <p className="mt-1 text-xl text-gray-600 dark:text-gray-300">{word.romaji}</p>
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Pronunciation</h2>
+            <p className="mt-1 text-xl text-gray-600 dark:text-gray-300">{word.pronunciation}</p>
           </div>
 
           <div>
             <h2 className="text-lg font-semibold text-gray-800 dark:text-white">English</h2>
             <p className="mt-1 text-xl text-gray-600 dark:text-gray-300">{word.english}</p>
           </div>
+
+          {(word.gender || word.plural) && (
+            <div>
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-white">German Details</h2>
+              <div className="mt-2 grid grid-cols-2 gap-4">
+                {word.gender && (
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Gender</p>
+                    <p className="mt-1 text-xl text-gray-600 dark:text-gray-300">{word.gender}</p>
+                  </div>
+                )}
+                {word.plural && (
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Plural</p>
+                    <p className="mt-1 text-xl text-gray-600 dark:text-gray-300">{word.plural}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
             <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Study Statistics</h2>

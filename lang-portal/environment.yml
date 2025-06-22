@@ -1,0 +1,15 @@
+name: german-learning
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - flask
+  - pytest=7.4.3
+  - nodejs
+  - npm
+  - pip
+  - pip:
+    - flask-cors
+    - invoke
+    - pytest-flask==1.3.0

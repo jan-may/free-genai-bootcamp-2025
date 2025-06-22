@@ -1,24 +1,53 @@
-## Setting up the database
+# German Learning Portal - Backend
+
+Flask-based REST API for the German language learning application.
+
+## Database Setup
+
+### Initialize Database with German Vocabulary
 
 ```sh
 invoke init-db
 ```
 
-This will do the following:
-- create the words.db (Sqlite3 database)
-- run the migrations found in `seeds/`
-- run the seed data found in `seed/`
+This will:
+- Create the words.db (SQLite3 database) 
+- Run SQL migrations from `sql/setup/`
+- Import German seed data:
+  - Core German verbs (`seed/data_verbs.json`)
+  - Core German adjectives (`seed/data_adjectives.json`) 
+  - Core German nouns with gender/plural (`seed/data_nouns.json`)
+  - Study activities configuration
 
-Please note that migrations and seed data is manually coded to be imported in the `lib/db.py`. So you need to modify this code if you want to import other seed data.
+### Database Schema
 
-## Clearing the database
+The database supports German-specific features:
+- `german`: The German word
+- `pronunciation`: IPA pronunciation guide
+- `english`: English translation
+- `gender`: Grammatical gender (der/die/das)
+- `plural`: Plural form for nouns
+- `parts`: JSON structure for word components
 
-Simply delete the `words.db` to clear entire database.
+### Clearing Database
 
-## Running the backend api
+```sh
+rm words.db
+```
+
+## Running the API Server
 
 ```sh
 python app.py 
 ```
 
-This should start the flask app on port `5000`
+Starts the Flask development server on http://localhost:5000
+
+## API Endpoints
+
+- `GET /words` - Paginated German words with sorting
+- `GET /words/{id}` - Individual word details
+- `GET /groups` - Word groups (verbs, adjectives, nouns)
+- `GET /groups/{id}/words` - Words in a specific group
+- `GET /study-sessions` - Study session history
+- `POST /study-sessions` - Create new study session

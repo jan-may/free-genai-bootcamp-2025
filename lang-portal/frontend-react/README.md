@@ -1,50 +1,74 @@
-# React + TypeScript + Vite
+# German Learning Portal - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Modern React frontend for the German language learning application, built with TypeScript and Vite.
 
-Currently, two official plugins are available:
+## Technology Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 18** with TypeScript for type safety
+- **Vite** for fast development and building
+- **Tailwind CSS** for styling
+- **Radix UI** for accessible components
+- **React Router** for navigation
+- **Lucide React** for icons
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **German Word Management**: Browse, search, and view German vocabulary
+- **Study Activities**: Integrated external study tools
+- **Progress Tracking**: Visual dashboards and statistics
+- **Responsive Design**: Works on desktop and mobile
+- **Dark/Light Theme**: Automatic theme switching
+- **Accessibility**: Built with Radix UI for screen reader support
 
-- Configure the top-level `parserOptions` property like this:
+## Development
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### Install Dependencies
+
+```sh
+npm install
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### Run Development Server
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```sh
+npm run dev
 ```
+
+Available at http://localhost:5173
+
+### Build for Production
+
+```sh
+npm run build
+```
+
+### Type Checking
+
+```sh
+npm run type-check
+```
+
+### Linting
+
+```sh
+npm run lint
+```
+
+## Project Structure
+
+```
+src/
+  components/     # Reusable UI components
+  pages/          # Page-level components
+  services/       # API client and types
+  context/        # React context providers
+  hooks/          # Custom React hooks
+  lib/            # Utility functions
+```
+
+## German-Specific Features
+
+- **Gender Display**: Shows der/die/das for nouns
+- **Plural Forms**: Displays plural variations
+- **IPA Pronunciation**: Shows pronunciation guides
+- **Grammar Support**: Special handling for German linguistic features
