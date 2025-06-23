@@ -1,0 +1,14 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+services:
+  ollama-server:
+    image: ollama/ollama
+    container_name: ollama-server
+    network_mode: host
+    environment:
+      no_proxy: ${NO_PROXY}
+      http_proxy: ${HTTP_PROXY}
+      https_proxy: ${HTTPS_PROXY}
+      LLM_MODEL_ID: ${LLM_MODEL_ID}
+      host_ip: ${HOST_IP}
