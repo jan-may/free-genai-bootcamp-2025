@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Client</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #messages { height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+        .user-message { color: blue; margin: 5px 0; }
+        .assistant-message { color: green; margin: 5px 0; }
+        #messageInput { width: 70%; padding: 5px; }
+        button { padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>OPEA Chat Client</h1>
+    <div id="messages"></div>
+    <input type="text" id="messageInput" placeholder="Type your message..." onkeypress="if(event.key==='Enter') sendMessage()">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            input.value = '';
+            const messagesDiv = document.getElementById('messages');
+            
+            // Add user message
+            const userDiv = document.createElement('div');
+            userDiv.className = 'user-message';
+            userDiv.textContent = 'You: ' + message;
+            messagesDiv.appendChild(userDiv);
+            
+            // Add assistant message container
+            const assistantDiv = document.createElement('div');
+            assistantDiv.className = 'assistant-message';
+            assistantDiv.textContent = 'Assistant: ';
+            messagesDiv.appendChild(assistantDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            try {
+                const response = await fetch('http://localhost:8000/v1/example-service', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: 'llama3.2:1b',
+                        messages: [{"role": "user", "content": message}]
+                    })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                let pendingContent = '';
+                let updateTimer = null;
+
+                // Fast update function using textContent for better performance
+                const flushContent = () => {
+                    if (pendingContent) {
+                        assistantDiv.textContent += pendingContent;
+                        pendingContent = '';
+                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                    }
+                };
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) {
+                        flushContent(); // Flush any remaining content
+                        break;
+                    }
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop(); // Keep incomplete line in buffer
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6).trim();
+                            if (data === '[DONE]') {
+                                flushContent();
+                                return;
+                            }
+                            
+                            try {
+                                const parsed = JSON.parse(data);
+                                const content = parsed.choices?.[0]?.delta?.content;
+                                if (content) {
+                                    pendingContent += content;
+                                    
+                                    // Batch updates every 16ms (~60fps) for smooth rendering
+                                    if (!updateTimer) {
+                                        updateTimer = setTimeout(() => {
+                                            flushContent();
+                                            updateTimer = null;
+                                        }, 16);
+                                    }
+                                }
+                            } catch (e) {
+                                console.log('Parse error:', e, 'Data:', data);
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                assistantDiv.textContent += 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+curl -X POST http://localhost:8000/v1/example-service \
+    -H "Content-Type: application/json" \
+    -d '{
+      "model": "llama3.2:1b",
+      "messages": [
+        {"role": "user", "content": "Hello"},
+        {"role": "assistant", "content": "Hi there!"},
+        {"role": "user", "content": "Tell me a joke"}
+      ]
+    }'
+

@@ -2,13 +2,24 @@
 # SPDX-License-Identifier: Apache-2.0
 
 services:
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    network_mode: host
+    environment:
+      no_proxy: ${no_proxy}
+      http_proxy: ${http_proxy}
+      https_proxy: ${https_proxy}
+      COLLECTOR_ZIPKIN_HOST_PORT: 9411
+    restart: unless-stopped
   ollama-server:
     image: ollama/ollama
     container_name: ollama-server
     network_mode: host
     environment:
-      no_proxy: ${NO_PROXY}
-      http_proxy: ${HTTP_PROXY}
-      https_proxy: ${HTTPS_PROXY}
+      no_proxy: ${no_proxy}
+      http_proxy: ${http_proxy}
+      https_proxy: ${https_proxy}
       LLM_MODEL_ID: ${LLM_MODEL_ID}
-      host_ip: ${HOST_IP}
+      host_ip: ${host_ip}
+      OLLAMA_HOST: 0.0.0.0:${LLM_ENDPOINT_PORT:-9000}
