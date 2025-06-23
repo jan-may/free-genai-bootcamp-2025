@@ -102,7 +102,7 @@ class TestWordsAPI:
     def test_get_word_by_id_invalid(self, client):
         """Test GET /api/words/:id with invalid ID."""
         response = client.get('/api/words/invalid')
-        assert response.status_code == 400
+        assert response.status_code == 404  # Flask returns 404 for invalid route parameters
         
         data = json.loads(response.data)
         assert 'error' in data

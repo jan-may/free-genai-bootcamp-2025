@@ -23,6 +23,9 @@ class TestDatabaseIntegration:
         with app.app_context():
             cursor = app.db.cursor()
             
+            # Enable foreign key constraints for this test
+            cursor.execute("PRAGMA foreign_keys = ON")
+            
             # Try to delete a group that has words - should fail due to foreign key
             with pytest.raises(Exception):
                 cursor.execute("DELETE FROM groups WHERE id = 1")

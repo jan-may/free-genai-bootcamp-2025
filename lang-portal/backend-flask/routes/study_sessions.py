@@ -296,6 +296,9 @@ def load(app):
       # Then delete all study sessions
       cursor.execute('DELETE FROM study_sessions')
       
+      # Reset word review statistics
+      cursor.execute('DELETE FROM word_reviews')
+      
       app.db.commit()
       
       return jsonify({"message": "Study history cleared successfully"}), 200

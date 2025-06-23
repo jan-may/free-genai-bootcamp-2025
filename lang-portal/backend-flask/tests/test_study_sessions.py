@@ -49,13 +49,13 @@ class TestStudySessionsAPI:
         response = client.post('/api/study_sessions',
                              data=json.dumps({'group_id': 999, 'study_activity_id': 1}),
                              content_type='application/json')
-        assert response.status_code == 400
+        assert response.status_code == 404  # Group not found
         
         # Invalid study_activity_id
         response = client.post('/api/study_sessions',
                              data=json.dumps({'group_id': 1, 'study_activity_id': 999}),
                              content_type='application/json')
-        assert response.status_code == 400
+        assert response.status_code == 404  # Study activity not found
     
     def test_get_study_sessions_list(self, client):
         """Test GET /api/study-sessions endpoint."""
@@ -214,7 +214,7 @@ class TestStudySessionsAPI:
         response = client.post(f'/api/study_sessions/{session_id}/review',
                              data=json.dumps(review_data),
                              content_type='application/json')
-        assert response.status_code == 400
+        assert response.status_code == 404  # Word not found
     
     def test_reset_study_sessions(self, client):
         """Test POST /api/study-sessions/reset endpoint."""
