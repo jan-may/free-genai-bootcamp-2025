@@ -74,8 +74,8 @@ class TestGroupsAPI:
         response = client.get('/api/groups/invalid')
         assert response.status_code == 404  # Flask returns 404 for invalid route parameters
         
-        data = json.loads(response.data)
-        assert 'error' in data
+        # Flask 404 responses are HTML, not JSON, so just check status code
+        assert b'404' in response.data or b'Not Found' in response.data
     
     def test_get_group_words(self, client):
         """Test GET /api/groups/:id/words endpoint."""

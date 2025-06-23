@@ -104,8 +104,8 @@ class TestWordsAPI:
         response = client.get('/api/words/invalid')
         assert response.status_code == 404  # Flask returns 404 for invalid route parameters
         
-        data = json.loads(response.data)
-        assert 'error' in data
+        # Flask 404 responses are HTML, not JSON, so just check status code
+        assert b'404' in response.data or b'Not Found' in response.data
     
     def test_word_with_gender_and_plural(self, client):
         """Test word with gender and plural forms."""
