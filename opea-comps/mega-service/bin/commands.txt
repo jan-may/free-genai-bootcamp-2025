@@ -1,3 +1,30 @@
+# OPEA Mega Service Commands
+
+## 1. Start Docker Services
+LLM_ENDPOINT_PORT=9000 docker compose up
+
+## 2. Check Services Status
+# Check Ollama is running on port 9000
+curl http://localhost:9000/api/tags
+
+# Check Jaeger UI (optional)
+# Visit: http://localhost:16686/
+
+## 3. Pull LLM Model
+curl http://localhost:9000/api/pull -d '{"model": "llama3.2:1b"}'
+
+## 4. Start OPEA Mega Service
+python app.py
+
+## 5. Test with curl - Simple Message
+curl -X POST http://localhost:8000/v1/example-service \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "llama3.2:1b",
+    "messages": [{"role": "user", "content": "Hello, how are you?"}]
+  }'
+
+## 6. Test with curl - Multi-turn Conversation  
 curl -X POST http://localhost:8000/v1/example-service \
     -H "Content-Type: application/json" \
     -d '{
@@ -8,4 +35,26 @@ curl -X POST http://localhost:8000/v1/example-service \
         {"role": "user", "content": "Tell me a joke"}
       ]
     }'
+
+## 7. Test with curl - Ask Questions
+curl -X POST http://localhost:8000/v1/example-service \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "llama3.2:1b",
+    "messages": [{"role": "user", "content": "What is the capital of France?"}]
+  }'
+
+## 8. Use Web Client
+# Open index.html in browser for interactive chat interface
+
+## 9. Troubleshooting
+# View Docker logs
+docker compose logs ollama-server
+docker compose logs jaeger
+
+# Stop services
+docker compose down
+
+# Clean up Docker
+docker system prune -f
 
