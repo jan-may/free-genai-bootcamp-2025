@@ -59,7 +59,8 @@ class TestDatabaseIntegration:
         
         # Check word statistics
         response = client.get('/api/words/1')
-        word = json.loads(response.data)
+        data = json.loads(response.data)
+        word = data['word']
         assert word['correct_count'] == 7  # Was 5, +2
         assert word['wrong_count'] == 3     # Was 2, +1
         
@@ -81,7 +82,7 @@ class TestComplexWorkflows:
         
         # 2. Get study activities
         response = client.get('/api/study-activities')
-        activities = json.loads(response.data)['study_activities']
+        activities = json.loads(response.data)
         activity_id = activities[0]['id']
         
         # 3. Get words for the group
@@ -152,16 +153,18 @@ class TestComplexWorkflows:
         # Check group study sessions
         response = client.get(f'/api/groups/{group_id}/study_sessions')
         sessions = json.loads(response.data)
-        assert sessions['total'] == 3
+        assert len(sessions['study_sessions']) == 3
         
         # Check word statistics
         response = client.get('/api/words/1')
-        word1 = json.loads(response.data)
+        data1 = json.loads(response.data)
+        word1 = data1['word']
         assert word1['correct_count'] == 6  # Was 5, +1
         assert word1['wrong_count'] == 4    # Was 2, +2
         
         response = client.get('/api/words/4')
-        word4 = json.loads(response.data)
+        data4 = json.loads(response.data)
+        word4 = data4['word']
         assert word4['correct_count'] == 2  # Was 0, +2
         assert word4['wrong_count'] == 1    # Was 0, +1
     
@@ -202,6 +205,7 @@ class TestComplexWorkflows:
         
         # Word statistics should be reset
         response = client.get('/api/words/1')
-        word = json.loads(response.data)
+        data = json.loads(response.data)
+        word = data['word']
         assert word['correct_count'] == 0
         assert word['wrong_count'] == 0

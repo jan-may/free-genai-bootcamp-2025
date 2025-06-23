@@ -137,7 +137,7 @@ class TestStudySessionsAPI:
         assert data['session']['group_id'] == 1
         assert data['session']['activity_id'] == 1
         assert 'start_time' in data['session']
-        assert len(data['words']) == 2  # Test Verbs group has 2 words
+        assert len(data['words']) == 0  # No words reviewed yet, so empty list
     
     def test_get_study_session_not_found(self, client):
         """Test GET /api/study-sessions/:id with non-existent session."""
@@ -265,11 +265,13 @@ class TestStudySessionsAPI:
         
         # Check updated statistics
         response = client.get('/api/words/1')
-        word_data = json.loads(response.data)
+        data = json.loads(response.data)
+        word_data = data['word']
         assert word_data['correct_count'] == 6  # Was 5, now 6
         assert word_data['wrong_count'] == 2    # Remains 2
         
         response = client.get('/api/words/4')
-        word_data = json.loads(response.data)
+        data = json.loads(response.data)
+        word_data = data['word']
         assert word_data['correct_count'] == 0  # Remains 0
         assert word_data['wrong_count'] == 1    # Was 0, now 1

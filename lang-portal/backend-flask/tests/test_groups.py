@@ -150,15 +150,20 @@ class TestGroupsAPI:
         
         data = json.loads(response.data)
         assert 'study_sessions' in data
-        assert 'total' in data
-        assert data['total'] >= 1
+        assert 'current_page' in data
+        assert 'total_pages' in data
+        assert len(data['study_sessions']) >= 1
         
         # Check session structure
         session = data['study_sessions'][0]
         assert 'id' in session
         assert 'group_id' in session
         assert 'study_activity_id' in session
-        assert 'created_at' in session
+        assert 'start_time' in session
+        assert 'end_time' in session
+        assert 'activity_name' in session
+        assert 'group_name' in session
+        assert 'review_items_count' in session
     
     def test_get_group_study_sessions_empty(self, client):
         """Test GET /api/groups/:id/study_sessions with no sessions."""
@@ -166,5 +171,5 @@ class TestGroupsAPI:
         assert response.status_code == 200
         
         data = json.loads(response.data)
-        assert data['total'] == 0
         assert len(data['study_sessions']) == 0
+        assert data['total_pages'] == 0

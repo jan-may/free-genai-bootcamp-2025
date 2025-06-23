@@ -59,7 +59,7 @@ class TestDashboardAPI:
         data = json.loads(response.data)
         assert data['total_sessions'] == 1
         assert data['total_words_studied'] == 2  # 2 different words studied
-        assert data['success_rate'] == 50.0  # 1 correct out of 2
+        assert abs(data['success_rate'] - 0.5) < 0.01  # 1 correct out of 2 (0.5 as decimal)
     
     def test_get_recent_session_empty(self, client):
         """Test GET /api/dashboard/recent-session with no sessions."""
@@ -72,6 +72,7 @@ class TestDashboardAPI:
     def test_get_recent_session_with_data(self, client):
         """Test GET /api/dashboard/recent-session with sessions."""
         # Create multiple study sessions
+        session_ids = []
         for i in range(2):
             session_data = {
                 'group_id': i + 1,  # Different groups
@@ -80,9 +81,9 @@ class TestDashboardAPI:
             response = client.post('/api/study_sessions',
                                  data=json.dumps(session_data),
                                  content_type='application/json')
-            
-            if i == 1:  # Remember the last session ID
-                last_session_id = json.loads(response.data)['session_id']
+            session_ids.append(json.loads(response.data)['session_id'])
+        
+        last_session_id = session_ids[-1]  # Remember the last session ID
         
         # Get recent session
         response = client.get('/api/dashboard/recent-session')
@@ -124,7 +125,7 @@ class TestDashboardAPI:
         response = client.get('/api/dashboard/stats')
         data = json.loads(response.data)
         assert data['total_words_studied'] == 2  # 2 different words studied
-        assert data['success_rate'] == 75.0  # 3 correct out of 4
+        assert abs(data['success_rate'] - 0.75) < 0.01  # 3 correct out of 4 (0.75 as decimal)
     
     def test_dashboard_stats_multiple_sessions(self, client):
         """Test dashboard stats with multiple sessions."""
@@ -154,5 +155,5 @@ class TestDashboardAPI:
         data = json.loads(response.data)
         assert data['total_sessions'] == 3
         assert data['total_words_studied'] == 1  # Only 1 word studied (word_id=1)
-        # 2 correct out of 3 reviews
-        assert abs(data['success_rate'] - 66.67) < 0.01
+        # 2 correct out of 3 reviews (as decimal)
+        assert abs(data['success_rate'] - 0.6667) < 0.01

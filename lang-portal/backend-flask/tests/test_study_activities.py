@@ -12,24 +12,23 @@ class TestStudyActivitiesAPI:
         assert response.status_code == 200
         
         data = json.loads(response.data)
-        assert 'study_activities' in data
-        assert isinstance(data['study_activities'], list)
-        assert len(data['study_activities']) == 2
+        assert isinstance(data, list)
+        assert len(data) == 2
         
         # Check activity structure
-        activity = data['study_activities'][0]
+        activity = data[0]
         assert 'id' in activity
-        assert 'name' in activity
-        assert 'url' in activity
+        assert 'title' in activity
+        assert 'launch_url' in activity
         assert 'preview_url' in activity
         
         # Check test data
-        activities = {a['name']: a for a in data['study_activities']}
+        activities = {a['title']: a for a in data}
         assert 'Test Activity 1' in activities
         assert 'Test Activity 2' in activities
         
         activity1 = activities['Test Activity 1']
-        assert activity1['url'] == 'http://example.com/activity1'
+        assert activity1['launch_url'] == 'http://example.com/activity1'
         assert activity1['preview_url'] == 'http://example.com/preview1'
     
     def test_study_activities_used_in_sessions(self, client):
@@ -49,15 +48,15 @@ class TestStudyActivitiesAPI:
         response = client.get(f'/api/study-sessions/{session_id}')
         assert response.status_code == 200
         
-        session = json.loads(response.data)
-        assert session['study_activity_id'] == 1
+        session_data = json.loads(response.data)
+        assert session_data['session']['activity_id'] == 1
         
         # Get all sessions and verify activity name is included
         response = client.get('/api/study-sessions')
         assert response.status_code == 200
         
         data = json.loads(response.data)
-        session = data['study_sessions'][0]
+        session = data['items'][0]
         assert session['activity_name'] == 'Test Activity 1'
     
     def test_study_activities_order(self, client):
@@ -66,13 +65,13 @@ class TestStudyActivitiesAPI:
         assert response.status_code == 200
         
         data = json.loads(response.data)
-        activities = data['study_activities']
+        activities = data
         
         # Should be ordered by ID
         assert activities[0]['id'] == 1
         assert activities[1]['id'] == 2
-        assert activities[0]['name'] == 'Test Activity 1'
-        assert activities[1]['name'] == 'Test Activity 2'
+        assert activities[0]['title'] == 'Test Activity 1'
+        assert activities[1]['title'] == 'Test Activity 2'
     
     def test_study_activity_urls_format(self, client):
         """Test that study activity URLs are properly formatted."""
@@ -80,15 +79,15 @@ class TestStudyActivitiesAPI:
         assert response.status_code == 200
         
         data = json.loads(response.data)
-        activities = data['study_activities']
+        activities = data
         
         for activity in activities:
             # Check URL format
-            assert activity['url'].startswith('http://')
+            assert activity['launch_url'].startswith('http://')
             assert activity['preview_url'].startswith('http://')
             
             # Ensure URLs are different
-            assert activity['url'] != activity['preview_url']
+            assert activity['launch_url'] != activity['preview_url']
     
     def test_study_activities_with_no_data(self, app):
         """Test study activities endpoint with empty database."""
@@ -103,4 +102,4 @@ class TestStudyActivitiesAPI:
             assert response.status_code == 200
             
             data = json.loads(response.data)
-            assert data['study_activities'] == []
+            assert data == []
